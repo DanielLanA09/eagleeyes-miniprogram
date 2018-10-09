@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagleshing.miniprogram.domain.mappers.CoverMapper">
+	<resultMap id="CoverMap" type="CoverResponse">
+		<id column="id" property="id"></id>
+		<result column="address" property="address"></result>
+		<result column="des" property="des"></result>
+		<result column="img" property="img"></result>
+		<result column="longitude" property="longitude"></result>
+		<result column="latitude" property="latitude"></result>
+		<result column="price" property="price"></result>
+		<result column="project" property="project"></result>
+		<result column="title" property="title"></result>
+		<result column="transmit_c" property="transmitC"></result>
+		<result column="view_c" property="viewC"></result>
+		<result column="dev_name" property="devName"></result>
+		<result column="mark" property="mark"></result>
+		<result column="distance" property="distance"></result>
+		<collection property="tags" ofType="TagResponse" >
+			<result column="tag_type" property="tagType"></result>
+			<result column="tag_name" property="tagName"></result>
+		</collection>
+	</resultMap>
+	<resultMap type="DevisionResponse" id="DevisionMap">
+		<id column="id" property="id"></id>
+		<result column="cover_id" property="coverId"></result>
+		<result column="mark" property="mark"></result>
+		<result column="dev_name" property="devName"></result>
+		<result column="icon1" property="icon1"/>
+		<result column="icon2" property="icon2"/>
+		<result column="norm" property="norm" ></result>
+		<result column="dev_sort" property="devSort"></result>
+		<result column="dev_type" property="devType"></result>
+		<result column="dev_des" property="devDes" ></result>
+		<collection property="params" ofType="ParamsResponse">
+			<result column="param_type" property="paramType"></result>
+			<result column="param_name" property="paramName"></result>
+			<result column="param_data" property="paramData"></result>
+			<result column="param_des" property="paramDes"></result>
+			<result column="must" property="must"></result>
+			<result column="devision_id" property="devisionId"></result>
+		</collection>
+	</resultMap>
+	<resultMap type="ModuleResponse" id="ModuleMap">
+		<result column="c_id" property="cId"></result>
+		<result column="m_id" property="mId"></result>
+		<result column="branch" property="branch"></result>
+		<result column="m_name" property="mName"></result>
+		<result column="m_des" property="mDes"></result>
+		<result column="json_content" property="jsonContent"></result>
+		<result column="m_sort" property="mSort"></result>
+		<result column="m_status" property="mStatus"></result>
+		<result column="m_status" property="mStatus"></result>
+	</resultMap>
+	<resultMap type="ParamResponse" id="ParamMap">
+		<result column="name" property="name"></result>
+		<result column="data" property="data"></result>
+		<result column="type" property="type"></result>
+		<result column="des" property="des"></result>
+		<result column="sort" property="sort"></result>
+	</resultMap>
+	<resultMap type="Question" id="QuestionMap">
+		<id column="id" property="id"></id>
+		<result column="title" property="title"/>
+		<result column="multiple" property="multiple"/>
+		<result column="max" property="max"/>
+		<collection property="options" ofType="QuestionOption">
+			<id column="option_id" property="optionId"/>
+			<result column="content" property="content"/>
+			<result column="checked" property="checked"/>
+			<result column="tags" property="tags"/>
+		</collection>
+	</resultMap>
+
+    <select id="findAll" resultMap="CoverMap">
+		SELECT 
+		    cover.*,dev.name as dev_name,dev.mark, tag.type as tag_type, tag.name as tag_name
+		FROM
+		    (SELECT 
+		        devision.*
+		    FROM
+		        devision
+		    WHERE
+		        devision.name = #{devision}
+		            AND devision.mark >= #{mark}
+		            ORDER BY devision.mark DESC
+		    LIMIT #{page} , #{size}) AS dev
+		        LEFT JOIN
+		    cover ON cover.id = dev.cover_id
+		        LEFT JOIN
+		    cover_tags ct ON ct.cover_id = cover.id
+		        LEFT JOIN
+		    tag ON tag.id = ct.tag_id
+		WHERE cover.district = #{district}
+    </select>
+    <select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
+		SELECT 
+		    base.*, d.mark,t.type tag_type, t.name tag_name
+		FROM
+		    (SELECT 
+		        info.*
+		    FROM
+		        (SELECT 
+		        c.*
+		    FROM
+		        tag t
+		    INNER JOIN cover_tags ct ON ct.tag_id = t.id
+		    INNER JOIN cover c ON c.id = ct.cover_id
+		    WHERE
+		        t.name IN 
+		        <foreach item="item" collection="tags" separator="," open="(" close=")">
+		        	#{item}
+		        </foreach>
+		    ORDER BY c.id) info
+		    GROUP BY info.id
+		    HAVING COUNT(info.id) = #{count}
+		    LIMIT #{page} , #{size}) AS base
+		        LEFT JOIN
+		    cover_tags ct ON ct.cover_id = base.id
+		        LEFT JOIN
+		    tag t ON t.id = ct.tag_id
+		    	LEFT JOIN
+		    devision d on d.cover_id = base.id
+		    where base.district = #{district} and base.price between #{minprice} and #{maxprice}
+    </select>
+    <select id="findById" resultMap="CoverMap">
+	    SELECT 
+		    cover.*, tag.type AS tag_type, tag.name AS tag_name
+		FROM
+		    cover
+		        LEFT JOIN
+		    cover_tags AS ct ON ct.cover_id = cover.id
+		        LEFT JOIN
+		    tag ON ct.tag_id = tag.id
+		WHERE
+		    cover.id = #{id}
+    </select>
+    <select id="findByTitle" resultMap="CoverMap">
+	    SELECT 
+		    cover.*, tag.type AS tag_type, tag.name AS tag_name
+		FROM
+		    cover
+		        LEFT JOIN
+		    cover_tags AS ct ON ct.cover_id = cover.id
+		        LEFT JOIN
+		    tag ON ct.tag_id = tag.id
+		WHERE
+		    cover.title like concat('%',#{title},'%');
+    </select>
+    <select id="findDevisionParams" resultMap="DevisionMap">
+		SELECT 
+			d.id,
+		    c.id cover_id,
+		    d.name dev_name,
+		    d.type dev_type,
+		    d.sort dev_sort,
+		    d.norm,
+		    d.mark,
+		    d.des dev_des,
+		    dp.type param_type,
+		    dp.name param_name,
+		    dp.data param_data,
+		    dp.des param_des,
+		    dp.must,
+		    dp.devision_id
+		FROM
+		    devision d
+		        LEFT JOIN
+		    cover c ON c.id = d.cover_id
+		        LEFT JOIN
+		    devision_params dp ON dp.devision_id = d.id
+		WHERE
+		    d.type = #{devType} AND c.id = #{coverId}
+    </select>
+    <select id="findAllDevisions" resultMap="DevisionMap">
+	    SELECT 
+		    d.id,
+		    d.cover_id,
+		    ds.name dev_name,
+		    ds.icon1,
+		    ds.icon2,
+		    d.type dev_type,
+		    ds.sort dev_sort,
+		    d.norm,
+		    d.mark,
+		    d.des dev_des
+		FROM
+		    devision d
+		        LEFT JOIN
+		    cover c ON c.id = d.cover_id
+		        LEFT JOIN
+		    devision_set ds ON ds.name = d.name
+		WHERE
+		    c.id = #{coverId} AND d.type != 0
+		ORDER BY d.sort
+    </select>
+    <select id="findModulesByName" resultMap="ModuleMap">
+	    SELECT 
+		    c.id c_id,
+		    m.id m_id,
+		    m.branch,
+		    m.des m_des,
+		    m.json_content,
+		    m.name m_name,
+		    m.sort m_sort,
+		    m.status m_status
+		FROM
+		    cover c
+		        LEFT JOIN
+		    devision d ON d.cover_id = c.id
+		        LEFT JOIN
+		    module m ON m.devision_id = d.id
+		WHERE
+		    c.id = #{id} AND d.name = #{devisionName}
+    </select>
+    <select id="findArround" resultMap="CoverMap">
+	    SELECT 
+		    *,
+		    ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.latitude * PI() / 180 - #{latitude} * PI() / 180) / 2),
+		                                    2) + COS(c.latitude * PI() / 180) * COS(#{latitude} * PI() / 180) * POW(SIN((c.longitude * PI() / 180 - #{longitude} * PI() / 180) / 2),
+		                                    2))) * 1000) AS distance
+		FROM
+		    eagleserver.cover AS c 
+		order by district asc limit 5
+    </select>
+    <select id="findParams" resultMap="ParamMap">
+    	SELECT * FROM eagleserver.devision_params where devision_id = #{devisionId}
+    </select>
+    <select id="findQuestions" resultMap="QuestionMap">
+    	    	SELECT 
+				    q.*, qo.id option_id, qo.content, qo.checked, qo.tags
+				FROM
+				    question q
+				        LEFT JOIN
+				    questionoption qo ON qo.question_id = q.id
+				ORDER BY q.id
+    </select>
+</mapper>
