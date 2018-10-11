@@ -1,53 +1,20 @@
-package com.eagleshing.miniprogram.domain;
+package com.eagleshing.miniprogram.payload;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class LoginRequest {
 
-@Entity
-public class User {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	int id;
-	
-	@Column(length=200)
-	String openId;
-	
-	@Column(length=50)
 	String nickName;
-	
-	@Column(length=200)
+
 	String avatarUrl;
 	
 	boolean gender;
-	
-	@Column(length=100)
+
 	String province;
-	
-	@Column(length=100)
+
 	String city;
-	
-	@Column(length=20)
+
 	String language;
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getOpenId() {
-		return openId;
-	}
-
-	public void setOpenId(String openId) {
-		this.openId = openId;
-	}
+	
+	String code;
 
 	public String getNickName() {
 		return nickName;
@@ -95,6 +62,14 @@ public class User {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 	
 	

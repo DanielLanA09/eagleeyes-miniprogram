@@ -73,6 +73,28 @@
 			<result column="tags" property="tags"/>
 		</collection>
 	</resultMap>
+	<resultMap type="UserCollectionResponse" id="UserCollectionMap">
+		<id column="user_id" property="userId"/>
+		<result column="nick_name" property="nickName"></result>
+		<result column="gender" property="gender"></result>
+		<result column="open_id" property="openId"></result>
+		<collection property="covers" ofType="CoverResponse">
+			<id column="id" property="id"></id>
+			<result column="address" property="address"></result>
+			<result column="des" property="des"></result>
+			<result column="img" property="img"></result>
+			<result column="longitude" property="longitude"></result>
+			<result column="latitude" property="latitude"></result>
+			<result column="price" property="price"></result>
+			<result column="project" property="project"></result>
+			<result column="title" property="title"></result>
+			<result column="transmit_c" property="transmitC"></result>
+			<result column="view_c" property="viewC"></result>
+			<result column="dev_name" property="devName"></result>
+			<result column="mark" property="mark"></result>
+			<result column="distance" property="distance"></result>
+		</collection>
+	</resultMap>
 
     <select id="findAll" resultMap="CoverMap">
 		SELECT 
@@ -236,5 +258,17 @@
 				        LEFT JOIN
 				    questionoption qo ON qo.question_id = q.id
 				ORDER BY q.id
+    </select>
+    <select id="findCollection" resultMap="UserCollectionMap">
+    	SELECT 
+		    u.id user_id, u.nick_name, u.gender, u.open_id, c.*
+		FROM
+		    mini_user u
+		        LEFT JOIN
+		    cover_collection uc ON u.id = uc.user_id
+		        LEFT JOIN
+		    cover c ON c.id = uc.cover_id
+		WHERE
+		    u.open_id = #{openId}
     </select>
 </mapper>

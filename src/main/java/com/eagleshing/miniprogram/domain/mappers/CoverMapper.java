@@ -8,6 +8,7 @@ import com.eagleshing.miniprogram.domain.DevisionResponse;
 import com.eagleshing.miniprogram.domain.ModuleResponse;
 import com.eagleshing.miniprogram.domain.ParamResponse;
 import com.eagleshing.miniprogram.domain.Question;
+import com.eagleshing.miniprogram.domain.UserCollectionResponse;
 
 public interface CoverMapper {
 	
@@ -30,5 +31,7 @@ public interface CoverMapper {
 	Set<ParamResponse> findParams(int devId);
 	
 	Set<Question> findQuestions();
+	
+	UserCollectionResponse findCollection(String openId);
 	
 }
