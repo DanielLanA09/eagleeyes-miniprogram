@@ -14,9 +14,9 @@ public class CoverResponse {
 	
 	private String img;
 	
-	private long longitude;
+	private String longitude;
 	
-	private long latitude;
+	private String latitude;
 	
 	private int price;
 	
@@ -82,23 +82,18 @@ public class CoverResponse {
 	public void setImg(String img) {
 		this.img = img;
 	}
-
-	public long getLongitude() {
+	public String getLongitude() {
 		return longitude;
 	}
-
-	public void setLongitude(long longitude) {
+	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-
-	public long getLatitude() {
+	public String getLatitude() {
 		return latitude;
 	}
-
-	public void setLatitude(long latitude) {
+	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
-
 	public int getPrice() {
 		return price;
 	}
