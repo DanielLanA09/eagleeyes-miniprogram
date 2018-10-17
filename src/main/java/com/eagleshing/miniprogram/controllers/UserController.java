@@ -2,6 +2,7 @@ package com.eagleshing.miniprogram.controllers;
 
 import javax.transaction.Transactional;
 
+import com.eagleshing.miniprogram.payload.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,9 @@ import com.eagleshing.miniprogram.domain.UserCollectionResponse;
 import com.eagleshing.miniprogram.domain.mappers.CoverMapper;
 import com.eagleshing.miniprogram.domain.repository.CollectionRepository;
 import com.eagleshing.miniprogram.domain.repository.UserRepository;
-import com.eagleshing.miniprogram.payload.CollectRequest;
-import com.eagleshing.miniprogram.payload.IsCollectedRequest;
-import com.eagleshing.miniprogram.payload.LoginRequest;
-import com.eagleshing.miniprogram.payload.LoginResponse;
-import com.eagleshing.miniprogram.payload.OpenIdResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Set;
 
 
 @RestController
@@ -42,7 +39,7 @@ public class UserController {
 	
 	@PostMapping("/collect")
 	@Transactional
-	public ResponseEntity<?> collect(@RequestBody CollectRequest request){
+	public ResponseEntity<?> collect(@RequestBody CollectionRequest request){
 		try {
 			CoverCollection collection = collectionHelper.findByCoverIdAndUserId(request.getCoverId(), request.getUserId());
 			if(collection==null) {
@@ -66,7 +63,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/deletecollect")
-	public ResponseEntity<?> deleteCollection(@RequestBody CollectRequest request){
+	public ResponseEntity<?> deleteCollection(@RequestBody CollectionRequest request){
 		try {
 			CoverCollection collection;
 			collection = collectionHelper.findByCoverIdAndUserId(request.getCoverId(), request.getUserId());
@@ -77,6 +74,27 @@ public class UserController {
 			collectionHelper.save(collection);
 			return ResponseEntity.ok(false);
 		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
+		}
+	}
+
+	@PostMapping("/deletecollections")
+	@Transactional
+	public ResponseEntity<?> deleteCollections(@RequestBody CollectionsRequest request){
+		try{
+			String openId="";
+			for (CollectionRequest collection: request.getCollections()) {
+				openId = collection.getOpenId();
+				CoverCollection coverCollection = collectionHelper.findByCoverIdAndUserId(collection.getCoverId(), collection.getUserId());
+				if(coverCollection==null) {
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Not found cover collection!");
+				}
+				coverCollection.setStatus((byte)-1);
+				collectionHelper.save(coverCollection);
+			}
+			UserCollectionResponse result = coverMapper.findCollection(openId);
+			return ResponseEntity.ok(result);
+		}catch (Exception e){
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
 	}

@@ -44,7 +44,7 @@ public class PostController {
 		try {
 			String[] tags = request.getTags().split(",");
 			int count = tags.length;
-			Set<CoverResponse> results = coverMapper.findByDistrictAndPriceAndTag(request.getDistrict(),request.getMinprice(),request.getMaxprice(),tags,count,request.getPage(),request.getSize());
+			Set<CoverResponse> results = coverMapper.findByDistrictAndPriceAndTag(request.getDistrict(),request.getMinprice(),request.getMaxprice(),tags,count,request.getPage(),request.getSize(),request.getTitle());
 			return ResponseEntity.ok(results);
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());

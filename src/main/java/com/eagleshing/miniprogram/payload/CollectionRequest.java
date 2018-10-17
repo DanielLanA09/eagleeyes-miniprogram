@@ -1,6 +1,6 @@
 package com.eagleshing.miniprogram.payload;
 
-public class CollectRequest {
+public class CollectionRequest {
 	
 	int userId;
 	

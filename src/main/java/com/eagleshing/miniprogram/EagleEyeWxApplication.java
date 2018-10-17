@@ -11,7 +11,6 @@ import com.eagleshing.miniprogram.property.FileStorageProperties;
 @SpringBootApplication
 @MapperScan("com.eagleshing.miniprogram.domain.mappers")
 public class EagleEyeWxApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(EagleEyeWxApplication.class, args);
 	}

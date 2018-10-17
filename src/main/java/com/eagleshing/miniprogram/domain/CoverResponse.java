@@ -4,7 +4,7 @@ import java.util.Set;
 
 public class CoverResponse {
 	
-	private int id;
+	private int coverId;
 	
 	private String address;
 	
@@ -36,20 +36,19 @@ public class CoverResponse {
 
 	private Set<TagResponse> tags;
 
+	public int getCoverId() {
+		return coverId;
+	}
+	public void setCoverId(int coverId){
+		this.coverId = coverId;
+	}
+
 	public float getDistance() {
 		return distance;
 	}
 
 	public void setDistance(float distance) {
 		this.distance = distance;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getAddress() {

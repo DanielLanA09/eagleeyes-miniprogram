@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.eagleshing.miniprogram.domain.mappers.CoverMapper">
 	<resultMap id="CoverMap" type="CoverResponse">
-		<id column="id" property="id"></id>
+		<id column="cover_id" property="coverId"></id>
 		<result column="address" property="address"></result>
 		<result column="des" property="des"></result>
 		<result column="img" property="img"></result>
@@ -18,7 +18,7 @@
 		<result column="dev_name" property="devName"></result>
 		<result column="mark" property="mark"></result>
 		<result column="distance" property="distance"></result>
-		<collection property="tags" ofType="TagResponse" >
+		<collection property="tags" column="tag_id" ofType="TagResponse" >
 			<result column="tag_type" property="tagType"></result>
 			<result column="tag_name" property="tagName"></result>
 		</collection>
@@ -78,8 +78,8 @@
 		<result column="nick_name" property="nickName"></result>
 		<result column="gender" property="gender"></result>
 		<result column="open_id" property="openId"></result>
-		<collection property="covers" ofType="CoverResponse">
-			<id column="id" property="id"></id>
+		<collection property="covers" ofType="CoverResponse" column="cover_id">
+			<id column="cover_id" property="coverId"></id>
 			<result column="address" property="address"></result>
 			<result column="des" property="des"></result>
 			<result column="img" property="img"></result>
@@ -93,33 +93,58 @@
 			<result column="dev_name" property="devName"></result>
 			<result column="mark" property="mark"></result>
 			<result column="distance" property="distance"></result>
+			<collection property="tags" ofType="TagResponse" column="tag_id">
+				<result column="tag_type" property="tagType"></result>
+				<result column="tag_name" property="tagName"></result>
+			</collection>
 		</collection>
 	</resultMap>
 
     <select id="findAll" resultMap="CoverMap">
 		SELECT 
-		    cover.*,dev.name as dev_name,dev.mark, tag.type as tag_type, tag.name as tag_name
+			c.id cover_id,
+			c.address,
+			c.des,
+			c.district,
+			c.img,
+			c.latitude,
+			c.longitude,
+			c.price,
+			c.project,
+			c.project_district,
+			c.status,
+			c.title,
+			c.transmit_c,
+			c.view_c,
+			dev.name AS dev_name,
+			dev.mark,
+			tag.id tag_id,
+			tag.type AS tag_type,
+			tag.name AS tag_name
 		FROM
-		    (SELECT 
-		        devision.*
-		    FROM
-		        devision
-		    WHERE
-		        devision.name = #{devision}
-		            AND devision.mark >= #{mark}
-		            ORDER BY devision.mark DESC
-		    LIMIT #{page} , #{size}) AS dev
-		        LEFT JOIN
-		    cover ON cover.id = dev.cover_id
-		        LEFT JOIN
-		    cover_tags ct ON ct.cover_id = cover.id
-		        LEFT JOIN
-		    tag ON tag.id = ct.tag_id
-		WHERE cover.district = #{district}
+			(SELECT
+				devision.*
+			FROM
+				devision
+			WHERE
+				devision.name = #{devision}
+					AND devision.mark >= #{mark}
+			ORDER BY devision.mark DESC
+			LIMIT #{page} , #{size}) AS dev
+				LEFT JOIN
+			cover c ON c.id = dev.cover_id
+				LEFT JOIN
+			cover_tags ct ON ct.cover_id = c.id
+				LEFT JOIN
+			tag ON tag.id = ct.tag_id
+		WHERE
+			c.district = #{district}
     </select>
     <select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
 		SELECT 
-		    base.*, d.mark,t.type tag_type, t.name tag_name
+		    base.id cover_id,base.address,base.des,base.district,base.img,base.latitude,base.longitude,
+			base.price,base.project,base.project_district,base.status,base.title,base.transmit_c,base.view_c,
+			d.mark,t.type tag_type, t.name tag_name
 		FROM
 		    (SELECT 
 		        info.*
@@ -145,7 +170,7 @@
 		    tag t ON t.id = ct.tag_id
 		    	LEFT JOIN
 		    devision d on d.cover_id = base.id
-		    where base.district = #{district} and base.price between #{minprice} and #{maxprice}
+	    where base.district = #{district} and base.price between #{minprice} and #{maxprice} and base.title like concat('%',#{title},'%');
     </select>
     <select id="findById" resultMap="CoverMap">
 	    SELECT 
@@ -251,24 +276,48 @@
     	SELECT * FROM eagleserver.devision_params where devision_id = #{devisionId}
     </select>
     <select id="findQuestions" resultMap="QuestionMap">
-    	    	SELECT 
-				    q.*, qo.id option_id, qo.content, qo.checked, qo.tags
-				FROM
-				    question q
-				        LEFT JOIN
-				    questionoption qo ON qo.question_id = q.id
-				ORDER BY q.id
+    	SELECT
+		    q.*, qo.id option_id, qo.content, qo.checked, qo.tags
+		FROM
+		    Question q
+		        LEFT JOIN
+		    QuestionOption qo ON qo.question_id = q.id
+		ORDER BY q.id
     </select>
     <select id="findCollection" resultMap="UserCollectionMap">
-    	SELECT 
-		    u.id user_id, u.nick_name, u.gender, u.open_id, c.*
+    	SELECT
+			u.id user_id,
+			u.nick_name,
+			u.gender,
+			u.open_id,
+			c.id cover_id,
+			c.address,
+			c.des,
+			c.district,
+			c.img,
+			c.latitude,
+			c.longitude,
+			c.price,
+			c.project,
+			c.project_district,
+			c.status,
+			c.title,
+			c.transmit_c,
+			c.view_c,
+			t.id tag_id,
+			t.type tag_type,
+			t.name tag_name
 		FROM
-		    mini_user u
-		        LEFT JOIN
-		    cover_collection uc ON u.id = uc.user_id
-		        LEFT JOIN
-		    cover c ON c.id = uc.cover_id
+			mini_user u
+				JOIN
+			cover_collection uc ON u.id = uc.user_id
+				JOIN
+			cover c ON c.id = uc.cover_id
+				JOIN
+			cover_tags ct ON ct.cover_id = c.id
+				JOIN
+			tag t ON ct.tag_id = t.id
 		WHERE
-		    u.open_id = #{openId}
+			u.open_id = #{openId} and uc.status=0
     </select>
 </mapper>

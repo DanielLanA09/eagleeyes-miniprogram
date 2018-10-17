@@ -14,7 +14,7 @@ public interface CoverMapper {
 	
 	List<CoverResponse> findAll(String devision,int mark,String district,int page,int size);
 	
-	Set<CoverResponse> findByDistrictAndPriceAndTag(String district,int minprice,int maxprice,String[] tags,int count,int page,int size);
+	Set<CoverResponse> findByDistrictAndPriceAndTag(String district,int minprice,int maxprice,String[] tags,int count,int page,int size,String title);
 	
 	CoverResponse findById(int coverId);
 	
