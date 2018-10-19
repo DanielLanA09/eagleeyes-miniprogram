@@ -19,6 +19,7 @@ public class PageHelperConfiguration {
         //通过设置pageSize=0或者RowBounds.limit = 0就会查询出全部的结果。
         p.setProperty("pageSizeZero", "true");
         pageHelper.setProperties(p);
+        
         return pageHelper;
 	}
 }

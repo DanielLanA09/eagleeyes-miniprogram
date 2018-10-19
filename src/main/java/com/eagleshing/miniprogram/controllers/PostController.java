@@ -81,7 +81,7 @@ public class PostController {
 	}
 	
 	/*
-	 * FETCH ALL DEVISIONS AND THEIR PARAMS ACOORDING TO DEVISION TYPE ADN COVER ID.
+	 * FETCH ALL DEVISIONS AND THEIR PARAMS ACOORDING TO DEVISION TYPE AND COVER ID.
 	 */
 	@GetMapping("/finddevisionparams/{id}/{type}")
 	public ResponseEntity<?> findDevisionsAndParams(@PathVariable int id,@PathVariable String type){
