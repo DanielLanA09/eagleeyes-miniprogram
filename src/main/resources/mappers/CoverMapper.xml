@@ -63,18 +63,18 @@
 	</resultMap>
 	<resultMap type="Question" id="QuestionMap">
 		<id column="id" property="id"></id>
-		<result column="title" property="title"/>
-		<result column="multiple" property="multiple"/>
-		<result column="max" property="max"/>
-		<collection property="options" ofType="QuestionOption">
-			<id column="option_id" property="optionId"/>
-			<result column="content" property="content"/>
-			<result column="checked" property="checked"/>
-			<result column="tags" property="tags"/>
+		<result column="title" property="title"></result>
+		<result column="multiple" property="multiple"></result>
+		<result column="max" property="max"></result>
+		<collection property="options" ofType="QuestionOption" column="option_id">
+			<id column="option_id" property="optionId"></id>
+			<result column="content" property="content"></result>
+			<result column="checked" property="checked"></result>
+			<result column="tags" property="tags"></result>
 		</collection>
 	</resultMap>
 	<resultMap type="UserCollectionResponse" id="UserCollectionMap">
-		<id column="user_id" property="userId"/>
+		<id column="user_id" property="userId"></id>
 		<result column="nick_name" property="nickName"></result>
 		<result column="gender" property="gender"></result>
 		<result column="open_id" property="openId"></result>
