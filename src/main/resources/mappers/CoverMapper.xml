@@ -186,29 +186,15 @@
     </select>
     <select id="findByTitle" resultMap="CoverMap">
 	    SELECT 
-		    c.id cover_id,
-			c.address,
-			c.des,
-			c.district,
-			c.img,
-			c.latitude,
-			c.longitude,
-			c.price,
-			c.project,
-			c.project_district,
-			c.status,
-			c.title,
-			c.transmit_c,
-			c.view_c,
-		    tag.type AS tag_type, tag.name AS tag_name
+		    cover.*, tag.type AS tag_type, tag.name AS tag_name
 		FROM
-		    cover c
+		    cover
 		        LEFT JOIN
-		    cover_tags AS ct ON ct.cover_id = c.id
+		    cover_tags AS ct ON ct.cover_id = cover.id
 		        LEFT JOIN
 		    tag ON ct.tag_id = tag.id
 		WHERE
-		    c.title like concat('%',#{title},'%');
+		    cover.title like concat('%',#{title},'%');
     </select>
     <select id="findDevisionParams" resultMap="DevisionMap">
 		SELECT 
