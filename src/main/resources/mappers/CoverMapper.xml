@@ -138,7 +138,7 @@
 				LEFT JOIN
 			tag ON tag.id = ct.tag_id
 		WHERE
-			c.district = #{district}
+			c.district = #{district} and c.status = 0
     </select>
     <select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
 		SELECT 

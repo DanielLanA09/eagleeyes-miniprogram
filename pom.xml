@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.eagleshing</groupId>
-	<artifactId>EagleEyeWx</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>eagleeyes-mini</artifactId>
+	<version>3.0</version>
 	<packaging>war</packaging>
 
-	<name>EagleEyeWx</name>
+	<name>eagleeyes-mini</name>
 	<description>Service for wechat mini program</description>
 
 	<parent>
