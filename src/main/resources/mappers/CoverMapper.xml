@@ -34,6 +34,7 @@
 		<result column="dev_sort" property="devSort"></result>
 		<result column="dev_type" property="devType"></result>
 		<result column="dev_des" property="devDes" ></result>
+		<result column="footer_des" property="footerDes" />
 		<collection property="params" ofType="ParamsResponse">
 			<result column="param_type" property="paramType"></result>
 			<result column="param_name" property="paramName"></result>
@@ -100,8 +101,8 @@
 		</collection>
 	</resultMap>
 
-    <select id="findAll" resultMap="CoverMap">
-		SELECT 
+	<select id="findAll" resultMap="CoverMap">
+		SELECT
 			c.id cover_id,
 			c.address,
 			c.des,
@@ -140,52 +141,102 @@
 		WHERE
 			c.district = #{district} and c.status = 0
     </select>
-    <select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
+
+	<select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
+		SELECT
+		base.id cover_id,base.address,base.des,base.district,base.img,base.latitude,base.longitude,
+		base.price,base.project,base.project_district,base.status,base.title,base.transmit_c,base.view_c,
+		d.mark,t.type tag_type,t.id tag_id, t.name tag_name
+		FROM
+		(SELECT
+		info.*
+		FROM
+		(SELECT
+		c.*
+		FROM
+		tag t
+		INNER JOIN cover_tags ct ON ct.tag_id = t.id
+		INNER JOIN cover c ON c.id = ct.cover_id
+		WHERE
+		t.name IN
+		<foreach item="item" collection="tags" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		ORDER BY c.id) info
+		GROUP BY info.id
+		HAVING COUNT(info.id) = #{count}
+		LIMIT #{page} , #{size}) AS base
+		LEFT JOIN
+		cover_tags ct ON ct.cover_id = base.id
+		LEFT JOIN
+		tag t ON t.id = ct.tag_id
+		LEFT JOIN
+		devision d on d.cover_id = base.id
+		where base.district = #{district} and base.price between #{minprice} and #{maxprice} and base.title like concat('%',#{title},'%');
+	</select>
+
+	<select id="findByDistrictAndPrice" resultMap="CoverMap">
 		SELECT 
-		    base.id cover_id,base.address,base.des,base.district,base.img,base.latitude,base.longitude,
-			base.price,base.project,base.project_district,base.status,base.title,base.transmit_c,base.view_c,
-			d.mark,t.type tag_type, t.name tag_name
+		    base.*, t.id tag_id, t.type tag_type, t.name tag_name
 		FROM
 		    (SELECT 
-		        info.*
+		        c.id cover_id,
+		            c.address,
+		            c.des,
+		            c.district,
+		            c.img,
+		            c.latitude,
+		            c.longitude,
+		            c.price,
+		            c.project,
+		            c.project_district,
+		            c.status,
+		            c.title,
+		            c.transmit_c,
+		            c.view_c
 		    FROM
-		        (SELECT 
-		        c.*
-		    FROM
-		        tag t
-		    INNER JOIN cover_tags ct ON ct.tag_id = t.id
-		    INNER JOIN cover c ON c.id = ct.cover_id
+		        cover AS c
 		    WHERE
-		        t.name IN 
-		        <foreach item="item" collection="tags" separator="," open="(" close=")">
-		        	#{item}
-		        </foreach>
-		    ORDER BY c.id) info
-		    GROUP BY info.id
-		    HAVING COUNT(info.id) = #{count}
+		        c.price BETWEEN #{minPrice} AND #{maxPrice}
+		            AND c.district = #{district}
+		            AND c.title LIKE concat('%',#{title},'%')
 		    LIMIT #{page} , #{size}) AS base
-		        LEFT JOIN
-		    cover_tags ct ON ct.cover_id = base.id
-		        LEFT JOIN
-		    tag t ON t.id = ct.tag_id
-		    	LEFT JOIN
-		    devision d on d.cover_id = base.id
-	    where base.district = #{district} and base.price between #{minprice} and #{maxprice} and base.title like concat('%',#{title},'%');
-    </select>
-    <select id="findById" resultMap="CoverMap">
-	    SELECT 
-		    cover.*, tag.type AS tag_type, tag.name AS tag_name
+		        INNER JOIN
+		    cover_tags ct ON ct.cover_id = base.cover_id
+		        INNER JOIN
+		    tag t ON ct.tag_id = t.id
+
+	</select>
+
+	<select id="findById" resultMap="CoverMap">
+	    SELECT
+		    c.id cover_id,
+			c.address,
+			c.des,
+			c.district,
+			c.img,
+			c.latitude,
+			c.longitude,
+			c.price,
+			c.project,
+			c.project_district,
+			c.status,
+			c.title,
+			c.transmit_c,
+			c.view_c,
+			tag.type AS tag_type, tag.name AS tag_name
 		FROM
-		    cover
+		    cover c
 		        LEFT JOIN
-		    cover_tags AS ct ON ct.cover_id = cover.id
+		    cover_tags AS ct ON ct.cover_id = c.id
 		        LEFT JOIN
 		    tag ON ct.tag_id = tag.id
 		WHERE
-		    cover.id = #{id}
+		    c.id = #{id}
     </select>
-    <select id="findByTitle" resultMap="CoverMap">
-	    SELECT 
+
+	<select id="findByTitle" resultMap="CoverMap">
+	    SELECT
 		    c.id cover_id,
 			c.address,
 			c.des,
@@ -210,6 +261,7 @@
 		WHERE
 		    c.title like concat('%',#{title},'%');
     </select>
+
     <select id="findDevisionParams" resultMap="DevisionMap">
 		SELECT 
 			d.id,
@@ -244,6 +296,8 @@
 		    ds.icon2,
 		    d.type dev_type,
 		    ds.sort dev_sort,
+		    ds.des dev_des,
+		    ds.footerDes footer_des,
 		    d.norm,
 		    d.mark,
 		    d.des dev_des
@@ -278,7 +332,20 @@
     </select>
     <select id="findArround" resultMap="CoverMap">
 	    SELECT 
-		    *,
+		    c.id cover_id,
+			c.address,
+			c.des,
+			c.district,
+			c.img,
+			c.latitude,
+			c.longitude,
+			c.price,
+			c.project,
+			c.project_district,
+			c.status,
+			c.title,
+			c.transmit_c,
+			c.view_c,
 		    ROUND(6378.138 * 2 * ASIN(SQRT(POW(SIN((c.latitude * PI() / 180 - #{latitude} * PI() / 180) / 2),
 		                                    2) + COS(c.latitude * PI() / 180) * COS(#{latitude} * PI() / 180) * POW(SIN((c.longitude * PI() / 180 - #{longitude} * PI() / 180) / 2),
 		                                    2))) * 1000) AS distance

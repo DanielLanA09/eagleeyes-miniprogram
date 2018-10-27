@@ -79,7 +79,6 @@ public class UserController {
 	}
 
 	@PostMapping("/deletecollections")
-	@Transactional
 	public ResponseEntity<?> deleteCollections(@RequestBody CollectionsRequest request){
 		try{
 			String openId="";

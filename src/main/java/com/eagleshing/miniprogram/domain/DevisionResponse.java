@@ -23,9 +23,9 @@ public class DevisionResponse {
 	
 	private String devDes;
 	
-	private Set<ParamsResponse> params;
+	private String footerDes;
 	
-	
+	private Set<ParamsResponse> params;	
 	
 	public String getDevDes() {
 		return devDes;
@@ -113,6 +113,14 @@ public class DevisionResponse {
 
 	public void setDevType(int devType) {
 		this.devType = devType;
+	}
+
+	public String getFooterDes() {
+		return footerDes;
+	}
+
+	public void setFooterDes(String footerDes) {
+		this.footerDes = footerDes;
 	}
 	
 	

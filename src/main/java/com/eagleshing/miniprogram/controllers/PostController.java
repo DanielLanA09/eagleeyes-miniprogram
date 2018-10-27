@@ -1,5 +1,6 @@
 package com.eagleshing.miniprogram.controllers;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,11 +43,26 @@ public class PostController {
 	@GetMapping("/findbydistrictandpriceandtag")
 	public ResponseEntity<?> findByDistrictAndPriceAndTag(CoverFilterRequest request){
 		try {
-			String[] tags = request.getTags().split(",");
-			int count = tags.length;
-			Set<CoverResponse> results = coverMapper.findByDistrictAndPriceAndTag(request.getDistrict(),request.getMinprice(),request.getMaxprice(),tags,count,request.getPage(),request.getSize(),request.getTitle());
+			Set<CoverResponse> results = new HashSet<>();
+			if (request.getTags().length()>0){
+				String[] tags = request.getTags().split(",");
+				int count = tags.length;
+				results = coverMapper.findByDistrictAndPriceAndTag(request.getDistrict(),request.getMinprice(),request.getMaxprice(),tags,count,request.getPage(),request.getSize(),request.getTitle());
+			}else{
+				results = coverMapper.findByDistrictAndPrice(request.getDistrict(),request.getMinprice(),request.getMaxprice(),request.getPage(),request.getSize(),request.getTitle());
+			}
 			return ResponseEntity.ok(results);
 		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
+		}
+	}
+
+	@GetMapping("/findbydistrictandprice")
+	public ResponseEntity<?> findByDistrictAndPriceAndTitle(CoverFilterRequest request){
+		try{
+			Set<CoverResponse> results = coverMapper.findByDistrictAndPrice(request.getDistrict(),request.getMinprice(),request.getMaxprice(),request.getPage(),request.getSize(),request.getTitle());
+			return ResponseEntity.ok(results);
+		}catch (Exception e){
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
 	}
@@ -59,7 +75,7 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
 	}
-	
+
 	@GetMapping("/findbyid/{id}")
 	public ResponseEntity<?> findById(@PathVariable int id){
 		try {
