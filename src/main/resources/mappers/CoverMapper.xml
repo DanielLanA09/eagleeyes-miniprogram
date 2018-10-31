@@ -124,19 +124,22 @@
 			tag.name AS tag_name
 		FROM
 			(SELECT
-				devision.*
+				devision.id,devision.cover_id,devision.devset_id,devision.mark,
+				ds.name
 			FROM
 				devision
+			INNER JOIN
+				devision_set ds on ds.id = devision.devset_id
 			WHERE
-				devision.name = #{devision}
+				ds.name = #{devision}
 					AND devision.mark >= #{mark}
 			ORDER BY devision.mark DESC
 			LIMIT #{page} , #{size}) AS dev
-				LEFT JOIN
+				INNER JOIN
 			cover c ON c.id = dev.cover_id
-				LEFT JOIN
+				INNER JOIN
 			cover_tags ct ON ct.cover_id = c.id
-				LEFT JOIN
+				INNER JOIN
 			tag ON tag.id = ct.tag_id
 		WHERE
 			c.district = #{district} and c.status = 0
@@ -266,12 +269,10 @@
 		SELECT 
 			d.id,
 		    c.id cover_id,
-		    d.name dev_name,
-		    d.type dev_type,
-		    d.sort dev_sort,
-		    d.norm,
+		    ds.name dev_name,
+		    ds.type dev_type,
+		    ds.sort dev_sort,
 		    d.mark,
-		    d.des dev_des,
 		    dp.type param_type,
 		    dp.name param_name,
 		    dp.data param_data,
@@ -280,12 +281,14 @@
 		    dp.devision_id
 		FROM
 		    devision d
-		        LEFT JOIN
+		    	inner join
+		    devision_set ds on ds.id = d.devset_id
+		        inner join
 		    cover c ON c.id = d.cover_id
-		        LEFT JOIN
+		        inner join
 		    devision_params dp ON dp.devision_id = d.id
 		WHERE
-		    d.type = #{devType} AND c.id = #{coverId}
+		    ds.type = #{devType} AND c.id = #{coverId}
     </select>
     <select id="findAllDevisions" resultMap="DevisionMap">
 	    SELECT 
@@ -294,13 +297,12 @@
 		    ds.name dev_name,
 		    ds.icon1,
 		    ds.icon2,
-		    d.type dev_type,
+		    ds.type dev_type,
 		    ds.sort dev_sort,
 		    ds.des dev_des,
 		    ds.footerDes footer_des,
-		    d.norm,
 		    d.mark,
-		    d.des dev_des
+		    ds.des dev_des
 		FROM
 		    devision d
 		        LEFT JOIN
@@ -308,8 +310,8 @@
 		        LEFT JOIN
 		    devision_set ds ON ds.name = d.name
 		WHERE
-		    c.id = #{coverId} AND d.type != 0
-		ORDER BY d.sort
+		    c.id = #{coverId} AND ds.type != 0
+		ORDER BY ds.sort
     </select>
     <select id="findModulesByName" resultMap="ModuleMap">
 	    SELECT 
