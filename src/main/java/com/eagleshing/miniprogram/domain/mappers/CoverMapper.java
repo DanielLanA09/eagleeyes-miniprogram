@@ -3,6 +3,7 @@ package com.eagleshing.miniprogram.domain.mappers;
 import java.util.List;
 import java.util.Set;
 
+import com.eagleshing.miniprogram.domain.BusStation;
 import com.eagleshing.miniprogram.domain.CoverResponse;
 import com.eagleshing.miniprogram.domain.DevisionResponse;
 import com.eagleshing.miniprogram.domain.ModuleResponse;
@@ -35,5 +36,7 @@ public interface CoverMapper {
 	Set<Question> findQuestions();
 	
 	UserCollectionResponse findCollection(String openId);
+	
+	BusStation findBus(String station);
 	
 }

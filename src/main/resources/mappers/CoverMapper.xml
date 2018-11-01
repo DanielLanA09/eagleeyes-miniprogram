@@ -100,82 +100,118 @@
 			</collection>
 		</collection>
 	</resultMap>
+	
+	<resultMap type="BusStation" id="BusStationMap">
+		<id column="id" property="id"/>
+		<result column="station_name" property="stationName"></result>
+		<collection property="bus" ofType="Bus" column="bus_id">
+			<id column="bus_id" property="busId"/>
+			<result column="bus_num" property="busNum"></result>
+			<result column="start_station" property="startStation"></result>
+			<result column="end_station" property="endStation"></result>
+			<result column="start_time" property="startTime"></result>
+			<result column="end_time" property="endTime"></result>
+		</collection>
+	</resultMap>
+	
+	<select id="findBus" resultMap="BusStationMap">
+		SELECT 
+		    bs.*,
+		    b.id bus_id,
+		    b.bus_num,
+		    b.start_station,
+		    b.end_station,
+		    b.start_time,
+		    b.end_time
+		FROM
+		    bus_station bs
+		        INNER JOIN
+		    bus b ON bs.id = b.bus_station_id
+		WHERE
+		    bs.station_name = #{station}
+	</select>
 
 	<select id="findAll" resultMap="CoverMap">
-		SELECT
-			c.id cover_id,
-			c.address,
-			c.des,
-			c.district,
-			c.img,
-			c.latitude,
-			c.longitude,
-			c.price,
-			c.project,
-			c.project_district,
-			c.status,
-			c.title,
-			c.transmit_c,
-			c.view_c,
-			dev.name AS dev_name,
-			dev.mark,
-			tag.id tag_id,
-			tag.type AS tag_type,
-			tag.name AS tag_name
+		SELECT 
+		    base.*, t.id tag_id, t.type tag_type, t.name tag_name
 		FROM
-			(SELECT
-				devision.id,devision.cover_id,devision.devset_id,devision.mark,
-				ds.name
-			FROM
-				devision
-			INNER JOIN
-				devision_set ds on ds.id = devision.devset_id
-			WHERE
-				ds.name = #{devision}
-					AND devision.mark >= #{mark}
-			ORDER BY devision.mark DESC
-			LIMIT #{page} , #{size}) AS dev
-				INNER JOIN
-			cover c ON c.id = dev.cover_id
-				INNER JOIN
-			cover_tags ct ON ct.cover_id = c.id
-				INNER JOIN
-			tag ON tag.id = ct.tag_id
-		WHERE
-			c.district = #{district} and c.status = 0
+		    (SELECT 
+		        c.id cover_id,
+		            c.address,
+		            c.des,
+		            c.district,
+		            c.img,
+		            c.latitude,
+		            c.longitude,
+		            c.price,
+		            c.project,
+		            c.project_district,
+		            c.status,
+		            c.title,
+		            c.transmit_c,
+		            c.view_c,
+		            ds.name AS dev_name,
+		            d.mark
+		    FROM
+		        cover c
+		    INNER JOIN devision d ON d.cover_id = c.id
+		    INNER JOIN devision_set ds ON d.devset_id = ds.id
+		    WHERE
+		        c.district = #{district}
+		            AND d.name = #{devision}
+		            AND d.mark >= #{mark} order by d.mark desc
+		    LIMIT #{page} , #{size}) base
+		        INNER JOIN
+		    cover_tags ct ON ct.cover_id = ct.cover_id
+		        INNER JOIN
+		    tag t ON ct.tag_id = t.id
     </select>
 
 	<select id="findByDistrictAndPriceAndTag" resultMap="CoverMap">
-		SELECT
-		base.id cover_id,base.address,base.des,base.district,base.img,base.latitude,base.longitude,
-		base.price,base.project,base.project_district,base.status,base.title,base.transmit_c,base.view_c,
-		d.mark,t.type tag_type,t.id tag_id, t.name tag_name
+		SELECT 
+		    c.id cover_id,
+		    c.address,
+		    c.des,
+		    c.district,
+		    c.img,
+		    c.latitude,
+		    c.longitude,
+		    c.price,
+		    c.project,
+		    c.project_district,
+		    c.status,
+		    c.title,
+		    c.transmit_c,
+		    c.view_c,
+		    t.id tag_id,
+		    t.type tag_type,
+		    t.name tag_name
 		FROM
-		(SELECT
-		info.*
-		FROM
-		(SELECT
-		c.*
-		FROM
-		tag t
-		INNER JOIN cover_tags ct ON ct.tag_id = t.id
-		INNER JOIN cover c ON c.id = ct.cover_id
-		WHERE
-		t.name IN
-		<foreach item="item" collection="tags" separator="," open="(" close=")">
-			#{item}
-		</foreach>
-		ORDER BY c.id) info
-		GROUP BY info.id
-		HAVING COUNT(info.id) = #{count}
-		LIMIT #{page} , #{size}) AS base
-		LEFT JOIN
-		cover_tags ct ON ct.cover_id = base.id
-		LEFT JOIN
-		tag t ON t.id = ct.tag_id
-		LEFT JOIN
-		devision d on d.cover_id = base.id
-		where base.district = #{district} and base.price between #{minprice} and #{maxprice} and base.title like concat('%',#{title},'%');
+		    (SELECT 
+		        c.*
+		    FROM
+		        cover c
+		    WHERE
+		        c.id IN (SELECT 
+		                ct.cover_id
+		            FROM
+		                cover_tags ct
+		            INNER JOIN tag t ON ct.tag_id = t.id
+		            WHERE
+		                t.name IN 
+						<foreach item="item" collection="tags" separator="," open="(" close=")">
+							#{item}
+						</foreach>
+		            GROUP BY ct.cover_id
+		            HAVING COUNT(ct.cover_id) = #{count})
+		            AND c.district = #{district}
+		            AND c.price BETWEEN #{minprice} AND #{maxprice}
+		            AND c.title LIKE concat('%',#{title},'%')
+		    LIMIT #{page} , #{size}) c
+		        INNER JOIN
+		    cover_tags ct ON ct.cover_id = c.id
+		        INNER JOIN
+		    tag t ON ct.tag_id = t.id
 	</select>
 
 	<select id="findByDistrictAndPrice" resultMap="CoverMap">
@@ -208,7 +244,6 @@
 		    cover_tags ct ON ct.cover_id = base.cover_id
 		        INNER JOIN
 		    tag t ON ct.tag_id = t.id
-
 	</select>
 
 	<select id="findById" resultMap="CoverMap">
@@ -353,7 +388,7 @@
 		                                    2))) * 1000) AS distance
 		FROM
 		    eagleserver.cover AS c 
-		order by district asc limit 5
+		order by distance limit 1,5
     </select>
     <select id="findParams" resultMap="ParamMap">
     	SELECT * FROM eagleserver.devision_params where devision_id = #{devisionId}
