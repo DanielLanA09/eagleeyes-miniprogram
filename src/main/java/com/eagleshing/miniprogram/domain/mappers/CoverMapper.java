@@ -3,13 +3,7 @@ package com.eagleshing.miniprogram.domain.mappers;
 import java.util.List;
 import java.util.Set;
 
-import com.eagleshing.miniprogram.domain.BusStation;
-import com.eagleshing.miniprogram.domain.CoverResponse;
-import com.eagleshing.miniprogram.domain.DevisionResponse;
-import com.eagleshing.miniprogram.domain.ModuleResponse;
-import com.eagleshing.miniprogram.domain.ParamResponse;
-import com.eagleshing.miniprogram.domain.Question;
-import com.eagleshing.miniprogram.domain.UserCollectionResponse;
+import com.eagleshing.miniprogram.domain.*;
 
 public interface CoverMapper {
 	
@@ -20,6 +14,8 @@ public interface CoverMapper {
 	Set<CoverResponse> findByDistrictAndPrice(String district,int minPrice,int maxPrice,int page,int size,String title);
 	
 	CoverResponse findById(int coverId);
+
+	List<CoverResponse> findByPrice(float price,int page,int size);
 	
 	Set<CoverResponse> findByTitle(String title);
 	
@@ -38,5 +34,13 @@ public interface CoverMapper {
 	UserCollectionResponse findCollection(String openId);
 	
 	BusStation findBus(String station);
+	
+	List<HomeBlockResponse> findHomeBlock();
+
+	List<HomeBlockResponse> findBlockByType(String blockType);
+
+	List<HomeBlockResponse> findBlockByTypeAndTitle(String blockType, String title);
+
+	List<CoverResponse> findHomeCovers(int page,int size);
 	
 }

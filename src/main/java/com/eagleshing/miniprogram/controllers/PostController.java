@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import com.eagleshing.miniprogram.domain.*;
+import com.eagleshing.miniprogram.domain.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eagleshing.miniprogram.domain.AccessHistory;
-import com.eagleshing.miniprogram.domain.Advice;
-import com.eagleshing.miniprogram.domain.BusStation;
-import com.eagleshing.miniprogram.domain.CoverResponse;
-import com.eagleshing.miniprogram.domain.DevisionResponse;
-import com.eagleshing.miniprogram.domain.EagleVacabulary;
 import com.eagleshing.miniprogram.domain.mappers.CoverMapper;
-import com.eagleshing.miniprogram.domain.repository.AccessRepository;
-import com.eagleshing.miniprogram.domain.repository.AdviceRepository;
-import com.eagleshing.miniprogram.domain.repository.CoverRepository;
-import com.eagleshing.miniprogram.domain.repository.EagleVavabularyRepository;
 import com.eagleshing.miniprogram.payload.CoverFilterRequest;
 
 @RestController
@@ -37,13 +30,19 @@ public class PostController {
 	private CoverMapper coverMapper;
 
 	@Autowired
-	private AccessRepository accessHelper;
+	private AccessRepository accessRepository;
 
 	@Autowired
 	private CoverRepository CoverRepository;
 	
 	@Autowired
 	private EagleVavabularyRepository vacabularyRepository;
+
+	@Autowired
+	AdviceRepository adviceRepository;
+
+	@Autowired
+	ArticleLinkRepository linkRepository;
 
 	@GetMapping("/filterbycondition")
 	public ResponseEntity<?> findAll(CoverFilterRequest request) {
@@ -90,7 +89,7 @@ public class PostController {
 	@GetMapping("/saveaccess")
 	public ResponseEntity<?> saveAccess(AccessHistory request) {
 		try {
-			return ResponseEntity.ok(accessHelper.save(request));
+			return ResponseEntity.ok(accessRepository.save(request));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
@@ -214,13 +213,43 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
 	}
-	
-	@Autowired
-	AdviceRepository adviceHelper;
-	
+
 	@PostMapping("/advice")
 	public ResponseEntity<?> saveAdvice(@Valid @RequestBody Advice advice){
-		return ResponseEntity.ok(adviceHelper.save(advice));
+		return ResponseEntity.ok(adviceRepository.save(advice));
+	}
+
+	@GetMapping("/homeblocks")
+	public ResponseEntity<?> findHomeBlocks(){
+		return ResponseEntity.ok(coverMapper.findHomeBlock());
+	}
+
+	@GetMapping("/findblock")
+	public ResponseEntity<?> findBlockByType(String blockType){
+		return ResponseEntity.ok(coverMapper.findBlockByType(blockType));
+	}
+
+	@GetMapping("/findblockbytypeandtype")
+	public ResponseEntity<?> findBlockByTypeAndTitle(String blockType,String title){
+		return ResponseEntity.ok(coverMapper.findBlockByTypeAndTitle(blockType,title));
+	}
+
+	@GetMapping("/homecovers")
+	public ResponseEntity<?> findHomeCovers(int page,int size){
+		return ResponseEntity.ok(coverMapper.findHomeCovers(page,size));
+	}
+
+	@GetMapping("/articlelinkviewadd")
+	@Transactional
+	public ResponseEntity<?> addLinkView(int id){
+		ArticleLink link = linkRepository.findById(id).get();
+		link.setView(link.getView()+1);
+		return ResponseEntity.ok(linkRepository.save(link));
+	}
+
+	@GetMapping("/findCoverByPrice")
+	public ResponseEntity<?> findCoverByPrice(float price,int page,int size){
+		return  ResponseEntity.ok(coverMapper.findByPrice(price,page,size));
 	}
 
 }

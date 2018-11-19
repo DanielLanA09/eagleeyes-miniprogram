@@ -113,6 +113,118 @@
 			<result column="end_time" property="endTime"></result>
 		</collection>
 	</resultMap>
+
+	<resultMap id="HomeBlockMap" type="HomeBlockResponse">
+		<id column="id" property="id"></id>
+		<result column="name" property="name"></result>
+		<result column="active" property="active"></result>
+		<result column="block_img" property="blockImg"></result>
+		<result column="position" property="position"></result>
+		<result column="block_type" property="blockType"></result>
+		<collection property="links" ofType="ArticleLinkResponse" column="link_id">
+			<id column="link_id" property="linkId"></id>
+			<result property="link" column="link"></result>
+			<result property="title" column="title"></result>
+			<result property="linkType" column="link_type"></result>
+			<result property="linkImg" column="link_img"></result>
+			<result property="view" column="view"></result>
+		</collection>
+	</resultMap>
+	<select id="findHomeCovers" resultMap="CoverMap">
+		SELECT
+			base.*, t.id tag_id, t.type tag_type, t.name tag_name
+		FROM
+			(SELECT
+				c.id cover_id,
+					c.address,
+					c.des,
+					c.district,
+					c.img,
+					c.latitude,
+					c.longitude,
+					c.price,
+					c.project,
+					c.project_district,
+					c.status,
+					c.title,
+					c.transmit_c,
+					c.view_c
+			FROM
+				cover c
+			LIMIT #{page} , #{size}) base
+				INNER JOIN
+			cover_tags ct ON ct.cover_id = base.cover_id
+				INNER JOIN
+			tag t ON ct.tag_id = t.id
+	</select>
+
+	<select id="findHomeBlock" resultMap="HomeBlockMap">
+		SELECT
+			hb.id,
+			hb.name,
+			hb.active,
+			hb.img block_img,
+			hb.position,
+			hb.type block_type,
+			al.id link_id,
+			al.link,
+			al.title,
+			al.type link_type,
+			al.img link_img,
+			al.view,
+			al.position
+		FROM
+			eagleserver.home_block hb
+				LEFT JOIN
+			article_link al ON hb.id = al.block_id
+		WHERE
+			hb.active = TRUE
+	</select>
+	<select id="findBlockByType" resultMap="HomeBlockMap">
+		SELECT
+			hb.id,
+			hb.name,
+			hb.active,
+			hb.img block_img,
+			hb.position,
+			hb.type block_type,
+			al.id link_id,
+			al.link,
+			al.title,
+			al.type link_type,
+			al.img link_img,
+			al.view,
+			al.position
+		FROM
+			eagleserver.home_block hb
+				LEFT JOIN
+			article_link al ON hb.id = al.block_id
+		WHERE
+			hb.active = TRUE AND hb.type = #{blockType}
+	</select>
+
+	<select id="findBlockByTypeAndTitle" resultMap="HomeBlockMap">
+		SELECT
+			hb.id,
+			hb.name,
+			hb.active,
+			hb.img block_img,
+			hb.position,
+			hb.type block_type,
+			al.id link_id,
+			al.link,
+			al.title,
+			al.type link_type,
+			al.img link_img,
+			al.view,
+			al.position
+		FROM
+			eagleserver.home_block hb
+				LEFT JOIN
+			article_link al ON hb.id = al.block_id
+		WHERE
+			hb.active = TRUE AND hb.type = #{blockType} AND al.title like concat('%',#{title},'%')
+	</select>
 	
 	<select id="findBus" resultMap="BusStationMap">
 		SELECT 
@@ -272,6 +384,35 @@
 		WHERE
 		    c.id = #{id}
     </select>
+	<select id="findByPrice" resultMap="CoverMap">
+		SELECT 
+		    c.*, tag.type AS tag_type, tag.name AS tag_name
+		FROM
+		    (SELECT 
+		        c.id cover_id,
+		            c.address,
+		            c.des,
+		            c.district,
+		            c.img,
+		            c.latitude,
+		            c.longitude,
+		            c.price,
+		            c.project,
+		            c.project_district,
+		            c.status,
+		            c.title,
+		            c.transmit_c,
+		            c.view_c
+		    FROM
+		        cover c
+		    WHERE
+		        c.price <![CDATA[ >= ]]> (#{price} - 1000) and c.price <![CDATA[ <= ]]> (#{price} + 1000)
+		    LIMIT #{page} , #{size}) c
+		        LEFT JOIN
+		    cover_tags AS ct ON ct.cover_id = c.cover_id
+		        LEFT JOIN
+		    tag ON ct.tag_id = tag.id
+	</select>
 
 	<select id="findByTitle" resultMap="CoverMap">
 	    SELECT
@@ -438,4 +579,5 @@
 		WHERE
 			u.open_id = #{openId} and uc.status=0
     </select>
+
 </mapper>
