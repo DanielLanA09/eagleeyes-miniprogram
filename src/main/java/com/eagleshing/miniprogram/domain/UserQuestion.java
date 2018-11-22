@@ -23,6 +23,28 @@ public class UserQuestion extends DateAudit {
     @Column(length = 60)
     private QuestionType type;
 
+    @Column(name = "view_point")
+    private int viewPoint;
+
+    @Column(name = "is_hidden")
+    private boolean isHidden;
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        isHidden = hidden;
+    }
+
+    public int getViewPoint() {
+        return viewPoint;
+    }
+
+    public void setViewPoint(int viewPoint) {
+        this.viewPoint = viewPoint;
+    }
+
     public int getId() {
         return id;
     }

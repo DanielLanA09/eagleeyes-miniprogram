@@ -24,7 +24,7 @@ import com.eagleshing.miniprogram.payload.UploadFileResponse;
 import com.eagleshing.miniprogram.service.FileStorageService;
 
 @RestController
-@RequestMapping("/api/file")
+@RequestMapping("/file")
 public class FileController {
 
 	private static final Logger logger = LoggerFactory.getLogger(FileController.class);

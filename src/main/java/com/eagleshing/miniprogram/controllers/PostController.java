@@ -44,6 +44,8 @@ public class PostController {
 	@Autowired
 	ArticleLinkRepository linkRepository;
 
+
+
 	@GetMapping("/filterbycondition")
 	public ResponseEntity<?> findAll(CoverFilterRequest request) {
 		try {
@@ -251,5 +253,7 @@ public class PostController {
 	public ResponseEntity<?> findCoverByPrice(float price,int page,int size){
 		return  ResponseEntity.ok(coverMapper.findByPrice(price,page,size));
 	}
+
+
 
 }

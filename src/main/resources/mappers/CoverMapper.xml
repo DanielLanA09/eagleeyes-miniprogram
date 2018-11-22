@@ -119,7 +119,7 @@
 		<result column="name" property="name"></result>
 		<result column="active" property="active"></result>
 		<result column="block_img" property="blockImg"></result>
-		<result column="position" property="position"></result>
+		<result column="b_position" property="position"></result>
 		<result column="block_type" property="blockType"></result>
 		<collection property="links" ofType="ArticleLinkResponse" column="link_id">
 			<id column="link_id" property="linkId"></id>
@@ -128,6 +128,7 @@
 			<result property="linkType" column="link_type"></result>
 			<result property="linkImg" column="link_img"></result>
 			<result property="view" column="view"></result>
+			<result property="position" column="l_position"/>
 		</collection>
 	</resultMap>
 	<select id="findHomeCovers" resultMap="CoverMap">
@@ -164,7 +165,7 @@
 			hb.name,
 			hb.active,
 			hb.img block_img,
-			hb.position,
+			hb.position b_position,
 			hb.type block_type,
 			al.id link_id,
 			al.link,
@@ -172,7 +173,7 @@
 			al.type link_type,
 			al.img link_img,
 			al.view,
-			al.position
+			al.position l_position
 		FROM
 			eagleserver.home_block hb
 				LEFT JOIN

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagleshing.miniprogram.domain.mappers.QuestionMapper">
+    <resultMap id="QuestionMap" type="QuestionResponse">
+        <id column="id" property="id" />
+        <result column="question" property="question" />
+        <result column="asker" property="asker" />
+        <result column="type" property="type" />
+        <result column="view_point" property="viewPoint"/>
+        <result column="is_hidden" property="isHidden" />
+        <result column="created_at" property="createdAt"/>
+        <collection property="answers" column="aid" ofType="AnswerResponse">
+            <id column="a_id" property="aId"/>
+            <result column="q_id" property="qId"/>
+            <result column="replier" property="replier"/>
+            <result column="reply" property="reply" />
+        </collection>
+    </resultMap>
+    <select id="findHotQuestion" resultMap="QuestionMap">
+        SELECT
+            q.*, a.id a_id, a.question_id q_id, a.username replier, a.reply
+        FROM
+            (SELECT
+                q.id,
+                    q.is_hidden,
+                    q.question,
+                    q.type,
+                    q.view_point,
+                    q.created_at,
+                    q.updated_at,
+                    mu.nick_name asker
+            FROM
+                user_question q
+            INNER JOIN mini_user mu ON mu.id = q.user_id
+            WHERE q.type != 'COMMIT'
+            LIMIT #{page} , #{size}) q
+                LEFT JOIN
+            user_answer a ON q.id = a.question_id
+    </select>
+</mapper>

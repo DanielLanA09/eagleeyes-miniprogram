@@ -1,5 +1,9 @@
 package com.eagleshing.miniprogram.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity(name = "user_answer")
@@ -9,14 +13,17 @@ public class UserAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "user_id")
-    private int userId;
-
-    @Column(name = "question_id")
-    private int questionId;
+    @Column(length = 50,name = "username")
+    private String username;
 
     @Lob
     private String reply;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "question_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private UserQuestion question;
 
     public int getId() {
         return id;
@@ -26,20 +33,12 @@ public class UserAnswer {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public int getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(int questionId) {
-        this.questionId = questionId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getReply() {
@@ -48,5 +47,13 @@ public class UserAnswer {
 
     public void setReply(String reply) {
         this.reply = reply;
+    }
+
+    public UserQuestion getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(UserQuestion question) {
+        this.question = question;
     }
 }
