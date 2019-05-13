@@ -1,5 +1,7 @@
 package com.eagleshing.miniprogram.domain;
 
+import com.eagleshing.miniprogram.domain.audit.DateAudit;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="access_histroy")
-public class AccessHistory {
+public class AccessHistory extends DateAudit {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

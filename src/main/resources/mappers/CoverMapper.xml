@@ -490,6 +490,16 @@
 		    c.id = #{coverId} AND ds.type != 0
 		ORDER BY ds.sort
     </select>
+    <select id="findDevisionBy2Id" resultMap="ModuleMap">
+    	SELECT 
+		    d.cover_id c_id, m.id m_id,m.branch,m.json_content
+		FROM
+		    devision d
+		        LEFT JOIN
+		    module m ON m.devision_id = d.id
+		WHERE
+		    d.id IN (#{id1} , #{id2}) AND m.branch = 2
+    </select>
     <select id="findModulesByName" resultMap="ModuleMap">
 	    SELECT 
 		    c.id c_id,

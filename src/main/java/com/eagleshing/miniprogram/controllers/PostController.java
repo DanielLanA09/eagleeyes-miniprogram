@@ -150,6 +150,11 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
 	}
+	
+	@GetMapping("/{id1}/{id2}/finddevision")
+	public ResponseEntity<?> findDevision(@PathVariable int id1,@PathVariable int id2){
+		return ResponseEntity.ok(coverMapper.findDevisionBy2Id(id1, id2));
+	}
 
 	/*
 	 * FETCH ALL MODULES REFFER TO DEVISION NAME AND COVER ID.

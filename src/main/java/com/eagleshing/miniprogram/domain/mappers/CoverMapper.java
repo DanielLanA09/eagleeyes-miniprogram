@@ -43,4 +43,6 @@ public interface CoverMapper {
 
 	List<CoverResponse> findHomeCovers(int page,int size);
 	
+	List<DevisionResponse> findDevisionBy2Id(int id1,int id2);
+	
 }

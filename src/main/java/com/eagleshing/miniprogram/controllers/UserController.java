@@ -1,27 +1,20 @@
 package com.eagleshing.miniprogram.controllers;
 
-import javax.transaction.Transactional;
-
-import com.eagleshing.miniprogram.payload.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
 import com.eagleshing.miniprogram.domain.CoverCollection;
 import com.eagleshing.miniprogram.domain.MiniUser;
 import com.eagleshing.miniprogram.domain.UserCollectionResponse;
 import com.eagleshing.miniprogram.domain.mappers.CoverMapper;
 import com.eagleshing.miniprogram.domain.repository.CollectionRepository;
 import com.eagleshing.miniprogram.domain.repository.UserRepository;
+import com.eagleshing.miniprogram.payload.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Set;
+import javax.transaction.Transactional;
 
 
 @RestController
