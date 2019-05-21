@@ -5,6 +5,7 @@ import com.eagleshing.miniprogram.domain.mappers.QuestionMapper;
 import com.eagleshing.miniprogram.domain.repository.UserAnswerRepository;
 import com.eagleshing.miniprogram.domain.repository.UserQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class QuestionController {
     QuestionMapper questionMapper;
 
     @PostMapping("/commit")
-    public ResponseEntity<?> commitQuestion(@Valid @RequestBody UserQuestion question){
+    public ResponseEntity<?> commitQuestion(@Valid @RequestBody UserQuestion question, BindResult result){
         if(question.getQuestion().length()<5){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("文字太短，请输入至少10个字符");
         }
@@ -37,5 +38,9 @@ public class QuestionController {
         return ResponseEntity.ok(questionMapper.findHotQuestion(pageable.getPageNumber(),pageable.getPageSize()));
     }
 
+    @GetMapping("/myQuestion")
+    public ResponseEntity<?> findMyQuestion(int userId) {
+        return ResponseEntity.ok(questionMapper.findMyQuestion(userId));
+    }
 
 }

@@ -11,6 +11,7 @@
         <result column="view_point" property="viewPoint"/>
         <result column="is_hidden" property="isHidden" />
         <result column="created_at" property="createdAt"/>
+        <result column="phone_number" property="phoneNumber"/>
         <collection property="answers" column="aid" ofType="AnswerResponse">
             <id column="a_id" property="aId"/>
             <result column="q_id" property="qId"/>
@@ -24,13 +25,13 @@
         FROM
             (SELECT
                 q.id,
-                    q.is_hidden,
-                    q.question,
-                    q.type,
-                    q.view_point,
-                    q.created_at,
-                    q.updated_at,
-                    mu.nick_name asker
+                q.is_hidden,
+                q.question,
+                q.type,
+                q.view_point,
+                q.created_at,
+                q.updated_at,
+                mu.nick_name asker
             FROM
                 user_question q
             INNER JOIN mini_user mu ON mu.id = q.user_id
@@ -38,5 +39,31 @@
             LIMIT #{page} , #{size}) q
                 LEFT JOIN
             user_answer a ON q.id = a.question_id
+    </select>
+    <select id="findMyQuestion" resultMap="QuestionMap">
+        SELECT
+            q.*,
+            a.id a_id,
+            a.question_id q_id,
+            a.username replier,
+            a.reply 
+        FROM
+            (
+            SELECT
+                q.id,
+                q.is_hidden,
+                q.question,
+                q.type,
+                q.view_point,
+                q.created_at,
+                q.updated_at,
+                mu.nick_name asker 
+            FROM
+                user_question q
+                INNER JOIN mini_user mu ON mu.id = q.user_id 
+            WHERE
+                q.user_id = #{userId}
+            ) q
+            LEFT JOIN user_answer a ON q.id = a.question_id
     </select>
 </mapper>

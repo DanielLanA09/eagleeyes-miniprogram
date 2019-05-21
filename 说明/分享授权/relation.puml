@@ -1,0 +1,16 @@
+@startuml
+class miniUser{
+  -int id
+  -int sharedTimes
+  -int @transient remainUnlockPoint
+}
+class myLockedProject{
+  -int id
+  -int userId
+  -String userName
+  -int projectId
+  -String projectName
+  -date unlockedAt
+  -int shareTimes
+}
+@enduml

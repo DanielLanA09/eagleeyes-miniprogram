@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eagleshing.miniprogram.domain.mappers.CoverMapper;
 import com.eagleshing.miniprogram.payload.CoverFilterRequest;
+import com.eagleshing.miniprogram.payload.UnlockProjectRequest;
+import com.eagleshing.miniprogram.payload.UserRequest;
+import com.eagleshing.miniprogram.service.LoginAuthService;
 
 @RestController
 @RequestMapping("/post")
@@ -259,6 +262,19 @@ public class PostController {
 		return  ResponseEntity.ok(coverMapper.findByPrice(price,page,size));
 	}
 
+	@Autowired
+	private LoginAuthService loginAuthService;
 
+
+	@PostMapping("/addOneUnlockPoint")
+	public ResponseEntity<?> addOneUnlockPoint(@RequestBody UserRequest user) {
+		MiniUser _user = loginAuthService.addLockOnePoint(user.getId());
+		return ResponseEntity.ok(_user);
+	}
+
+	@PostMapping("/unlockProject")
+	public ResponseEntity<?> unlockProject(@RequestBody UnlockProjectRequest request) {
+		return ResponseEntity.ok(loginAuthService.unlockProject(request.getProjectId(), request.getUserId()));
+	}
 
 }

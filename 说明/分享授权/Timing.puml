@@ -1,0 +1,13 @@
+@startuml
+actor user
+database server
+
+user -> server: Login authenticate
+server -> user: 3 free unlock points
+
+user -> server: share with friends
+server -> user: add one unlock points
+
+user -> server: unlock a project
+server -> user: check this project whether \nunlocked for current user, \nif not record this unlocked \nproject information and \nreduce one free unlock \npoint of the user
+@enduml

@@ -5,6 +5,8 @@ import com.eagleshing.miniprogram.domain.type.QuestionType;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity(name = "user_question")
 public class UserQuestion extends DateAudit {
@@ -14,7 +16,8 @@ public class UserQuestion extends DateAudit {
     private int id;
 
     @Column(name = "user_id")
-    private int userId;
+    @NotNull
+    private Integer userId;
 
     @Lob
     private String question;
@@ -28,6 +31,19 @@ public class UserQuestion extends DateAudit {
 
     @Column(name = "is_hidden")
     private boolean isHidden;
+
+    @Column(length = 11, name = "phone_number")
+    private String phoneNumber;
+    
+
+    public Integer getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
 
     public boolean isHidden() {
         return isHidden;
@@ -53,14 +69,6 @@ public class UserQuestion extends DateAudit {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getQuestion() {
         return question;
     }
@@ -76,4 +84,13 @@ public class UserQuestion extends DateAudit {
     public void setType(QuestionType type) {
         this.type = type;
     }
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
 }

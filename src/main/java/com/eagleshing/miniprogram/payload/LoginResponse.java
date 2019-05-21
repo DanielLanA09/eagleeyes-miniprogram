@@ -16,6 +16,8 @@ public class LoginResponse {
 	
 	String openId;
 
+	String session_key;
+
 	public int getUserId() {
 		return userId;
 	}
@@ -72,5 +74,13 @@ public class LoginResponse {
 		this.openId = openId;
 	}
 	
+
+	public String getSession_key() {
+		return this.session_key;
+	}
+
+	public void setSession_key(String session_key) {
+		this.session_key = session_key;
+	}
 	
 }

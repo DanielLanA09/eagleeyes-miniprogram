@@ -12,20 +12,31 @@ public class Cover {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	private int id;
+
+	@Column(length=20)
+	private String title;
 	
 	@Column(name="view_c")
 	private int viewC;
 
 	public int getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	public String getTitle() {
+		return this.title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public int getViewC() {
-		return viewC;
+		return this.viewC;
 	}
 
 	public void setViewC(int viewC) {

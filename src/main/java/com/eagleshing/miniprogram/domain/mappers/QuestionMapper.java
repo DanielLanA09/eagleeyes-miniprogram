@@ -8,4 +8,6 @@ import java.util.List;
 public interface QuestionMapper {
 
     List<QuestionResponse> findHotQuestion(@Param("page")int page, @Param("size")int size);
+
+    List<QuestionResponse> findMyQuestion(@Param("userId")int userId);
 }

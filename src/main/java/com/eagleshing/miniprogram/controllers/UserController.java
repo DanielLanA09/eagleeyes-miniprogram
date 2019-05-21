@@ -138,19 +138,21 @@ public class UserController {
 				user.setLanguage(request.getLanguage());
 				user.setProvince(request.getProvince());
 				user.setOpenId(result.getOpenid());
+				user.setSession_key(result.getSession_key());
 				user = userHelper.save(user);
 			}
 			
-			LoginResponse response = new LoginResponse();
-			response.setAvatarUrl(user.getAvatarUrl());
-			response.setCity(user.getCity());
-			response.setGender(user.isGender());
-			response.setNickName(user.getNickName());
-			response.setOpenId(user.getOpenId());
-			response.setProvince(user.getProvince());
-			response.setUserId(user.getId());
+			// LoginResponse response = new LoginResponse();
+			// response.setAvatarUrl(user.getAvatarUrl());
+			// response.setCity(user.getCity());
+			// response.setGender(user.isGender());
+			// response.setNickName(user.getNickName());
+			// response.setOpenId(user.getOpenId());
+			// response.setProvince(user.getProvince());
+			// response.setUserId(user.getId());
+			// response.setSession_key(result.getSession_key());
 			
-			return ResponseEntity.ok(response);
+			return ResponseEntity.ok(user);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause().getMessage());
 		}
